@@ -8,7 +8,7 @@
 
 BeginPackage["AntonAntonov`NumberTheoryUtilities`"];
 
-SpiralLattice::usage = "Spiral square lattice";
+SpiralLattice::usage = "Spiral square lattice.";
 
 TriangleMatrixEmbedding::usage = "Gives a triangle within a matrix.";
 
