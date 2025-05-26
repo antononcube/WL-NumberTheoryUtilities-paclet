@@ -62,7 +62,7 @@ SpiralLattice[n_Integer, lastAtArg_String : "BottomRight"] :=
 
 TriangleMatrixEmbedding[k_Integer?Positive, missingValue_ : 0] :=
     Module[{ncols = 2 * k - 1, matrix, start = 1, mid},
-      
+
       mid = Quotient[ncols, 2];
       matrix = ConstantArray[missingValue, {k, ncols}];
       Do[
@@ -138,11 +138,11 @@ ClearAll[SunflowerEmbeddingPlot];
 
 Options[SunflowerEmbeddingPlot] = Join[{ColorFunction -> Automatic, PlotStyle -> None}, Options[Graphics]];
 
-SunflowerEmbeddingPlot[n_Integer, withFunc_ : None, angle : (_?NumericQ | Automatic) : Automatic, opts: OptionsPattern[]] :=
+SunflowerEmbeddingPlot[n_Integer, withFunc_ : None, angle : (_?NumericQ | Automatic) : Automatic, opts : OptionsPattern[]] :=
     SunflowerEmbeddingPlot[Range[n], withFunc, angle, opts] /; n > 0;
 
-SunflowerEmbeddingPlot[ints_List, withFunc_ : None, angle : (_?NumericQ | Automatic) : Automatic, opts: OptionsPattern[]] :=
-    Module[{colorFunc, plotStyle, lsSunPoints},
+SunflowerEmbeddingPlot[ints_List, withFunc_ : None, angle : (_?NumericQ | Automatic) : Automatic, opts : OptionsPattern[]] :=
+    Module[{colorFunc, plotStyle, lsSunPoints, lsGroups, aNormalization},
 
       colorFunc = OptionValue[SunflowerEmbeddingPlot, ColorFunction];
       colorFunc =
@@ -164,7 +164,9 @@ SunflowerEmbeddingPlot[ints_List, withFunc_ : None, angle : (_?NumericQ | Automa
           If[TrueQ[withFunc === None],
             <| 1 -> Map[Point[{#x, #y}] &, lsSunPoints] |>,
             (*ELSE*)
-            GroupBy[lsSunPoints, #group &, {colorFunc[#group], Point[{#x, #y}]} & /@ # &]
+            lsGroups = DeleteDuplicates @ Map[#group&, lsSunPoints];
+            aNormalization = AssociationThread[lsGroups, Rescale[Range @ Length@ lsGroups, {1, Length@lsGroups}, {0, 1}]];
+            GroupBy[lsSunPoints, #group &, {colorFunc[aNormalization[#group]], Point[{#x, #y}]} & /@ # &]
           ];
 
       Graphics[{Sequence @@ plotStyle, Values[lsSunPoints]}, FilterRules[Options[Graphics], {opts}]]
@@ -197,7 +199,7 @@ ChordTrailsPlot[n_Integer, chordsArg : {{_?IntegerQ, _?IntegerQ} ..}, opts : Opt
       If[TrueQ[color === Automatic],
         color = RGBColor[0.4659039108257499, 0.5977704831063181, 0.7964303267504351]
       ];
-      
+
       plotStyle = OptionValue[ChordTrailsPlot, PlotStyle];
       If[TrueQ[plotStyle === Automatic], plotStyle = {}];
       plotStyle = Flatten[{plotStyle}];
