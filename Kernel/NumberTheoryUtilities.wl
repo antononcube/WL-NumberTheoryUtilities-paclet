@@ -169,7 +169,7 @@ SunflowerEmbeddingPlot[ints_List, withFunc_ : None, angle : (_?NumericQ | Automa
             GroupBy[lsSunPoints, #group &, {colorFunc[aNormalization[#group]], Point[{#x, #y}]} & /@ # &]
           ];
 
-      Graphics[{Sequence @@ plotStyle, Values[lsSunPoints]}, FilterRules[Options[Graphics], {opts}]]
+      Graphics[{Sequence @@ plotStyle, Values[lsSunPoints]}, FilterRules[{opts}, Options[Graphics]]]
     ];
 
 (*===========================================================*)
