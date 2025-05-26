@@ -135,7 +135,7 @@ SunflowerEmbedding[ints_List, withFunc_ : None, angleArg : (_?NumericQ | Automat
 
 ClearAll[SunflowerEmbeddingPlot];
 
-Options[SunflowerEmbeddingPlot] = {ColorFunction -> Automatic, PlotStyle -> None};
+Options[SunflowerEmbeddingPlot] = Join[{ColorFunction -> Automatic, PlotStyle -> None}, Options[Graphics]];
 
 SunflowerEmbeddingPlot[n_Integer, withFunc_ : None, angle : (_?NumericQ | Automatic) : Automatic, opts: OptionsPattern[]] :=
     SunflowerEmbeddingPlot[Range[n], withFunc, angle, opts] /; n > 0;
