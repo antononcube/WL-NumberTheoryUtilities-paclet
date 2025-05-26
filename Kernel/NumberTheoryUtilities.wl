@@ -8,13 +8,29 @@
 
 BeginPackage["AntonAntonov`NumberTheoryUtilities`"];
 
-
-(* ::Text:: *)
+TriangleMatrixEmbedding::usage = "Gives a triangle within a matrix.";
 
 SunflowerEmbedding::usage = "Sunflower embedding of integers from 1 to given upper limit.";
 
 
 Begin["`Private`"];
+
+TriangleMatrixEmbedding[k_Integer?Positive, missingValue_ : 0] :=
+    Module[
+      {ncols = 2 * k - 1, matrix, start = 1, mid, row, col},
+      mid = Quotient[ncols, 2];
+      matrix = ConstantArray[missingValue, {k, ncols}];
+      Do[
+        With[{offset = 2 * row, numElements = 2 * row + 1},
+          Do[
+            matrix[[row + 1, mid - row + col + 1]] = start++;
+            , {col, 0, numElements - 1}]
+        ],
+        {row, 0, k - 1}
+      ];
+
+      matrix
+    ];
 
 ClearAll[SunflowerEmbedding];
 
