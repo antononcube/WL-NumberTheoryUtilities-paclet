@@ -25,20 +25,21 @@ Begin["`Private`"];
 (*===========================================================*)
 
 ClearAll[SpiralLattice];
-SpiralLattice[n_Integer, lastAt_String : "bottom-right"] :=
-    Module[{corners, directions, row, col, num, matrix, dir, nextRow, nextCol},
+SpiralLattice[n_Integer, lastAtArg_String : "BottomRight"] :=
+    Module[{lastAt = lastAtArg, corners, directions, row, col, num, matrix, dir, nextRow, nextCol},
 
-      corners = {"top-left", "top-right", "bottom-right", "bottom-left"};
+      corners = ToLowerCase /@ {"TopLeft", "TopRight", "BottomRight", "BottomLeft"};
+      lastAt = ToLowerCase[StringReplace[lastAtArg, "-" -> ""]];
 
       If[!MemberQ[corners, lastAt],
         Return["The second argument is expected to be one of the strings: " <> StringJoin[Riffle[corners, " "]] <> "."]];
 
       {row, col, num, directions} =
           Switch[lastAt,
-            "top-left", {0, 0, 1, {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}},
-            "bottom-right", {n - 1, n - 1, 1, {{0, -1}, {-1, 0}, {0, 1}, {1, 0}}},
-            "top-right", {0, n - 1, 1, {{0, -1}, {1, 0}, {0, 1}, {-1, 0}}},
-            "bottom-left", {n - 1, 0, 1, {{0, 1}, {-1, 0}, {0, -1}, {1, 0}}}
+            "topleft", {0, 0, 1, {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}},
+            "bottomright", {n - 1, n - 1, 1, {{0, -1}, {-1, 0}, {0, 1}, {1, 0}}},
+            "topright", {0, n - 1, 1, {{0, -1}, {1, 0}, {0, 1}, {-1, 0}}},
+            "bottomleft", {n - 1, 0, 1, {{0, 1}, {-1, 0}, {0, -1}, {1, 0}}}
           ];
 
       matrix = ConstantArray[0, {n, n}];
@@ -112,7 +113,7 @@ SunflowerEmbedding[ints_List, withFunc_ : None, angleArg : (_?NumericQ | Automat
             "x" -> r * Cos[theta],
             "y" -> r * Sin[theta],
             If[TrueQ[withFunc === None],
-              Sequence @@ {},
+              Nothing,
               (*ELSE*)
               "group" -> withFunc[i]
             ]
@@ -159,7 +160,12 @@ SunflowerEmbeddingPlot[ints_List, withFunc_ : None, angle : (_?NumericQ | Automa
       plotStyle = Flatten @ List @ plotStyle;
 
       lsSunPoints = SunflowerEmbedding[ints, withFunc, angle];
-      lsSunPoints = GroupBy[lsSunPoints, #group &, {colorFunc[#group], Point[{#x, #y}]} & /@ # &];
+      lsSunPoints =
+          If[TrueQ[withFunc === None],
+            <| 1 -> Map[Point[{#x, #y}] &, lsSunPoints] |>,
+            (*ELSE*)
+            GroupBy[lsSunPoints, #group &, {colorFunc[#group], Point[{#x, #y}]} & /@ # &]
+          ];
 
       Graphics[{Sequence @@ plotStyle, Values[lsSunPoints]}, FilterRules[Options[Graphics], {opts}]]
     ];
